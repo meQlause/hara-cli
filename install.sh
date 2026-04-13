@@ -65,14 +65,12 @@ esac
 mkdir -p "$INSTALL_DIR"
 
 if [[ "${IS_WINDOWS:-false}" == "true" ]]; then
-  # Install the actual .exe binary
   install -m 755 "${TMP_DIR}/${BIN_NAME}" "${INSTALL_DIR}/${BIN_NAME}"
-  # Write a thin shim script named 'hara' (no extension) so Git Bash
-  # can find and execute it via PATH without needing the .exe suffix
-  cat > "${INSTALL_DIR}/hara" <<'SHIM'
-#!/usr/bin/env bash
-exec "$(dirname "$(realpath "$0")")/hara.exe" "$@"
-SHIM
+  chmod +x "${INSTALL_DIR}/${BIN_NAME}"
+  printf '%s\n' \
+    '#!/usr/bin/env bash' \
+    '"$(dirname "${BASH_SOURCE[0]}")/hara.exe" "$@"' \
+    > "${INSTALL_DIR}/hara"
   chmod +x "${INSTALL_DIR}/hara"
 else
   install -m 755 "${TMP_DIR}/${BIN_NAME}" "${INSTALL_DIR}/${BIN_NAME}"
