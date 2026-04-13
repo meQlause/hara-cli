@@ -4,21 +4,56 @@
 
 ## Installation
 
-### From GitHub Releases
-Download the latest binary for your operating system from the [Releases](https://github.com/meQlause/hara-cli/releases) page.
+### Option A — One-liner (Linux & Git Bash on Windows) ⚡
 
-- **Linux**: Download `hara-linux-x86_64.tar.gz`, extract, and move to `/usr/local/bin`:
-  ```bash
-  tar -xzf hara-linux-x86_64.tar.gz
-  sudo mv hara /usr/local/bin/
-  ```
-- **Debian/Ubuntu**: Download `hara.deb` and install:
-  ```bash
-  sudo dpkg -i hara.deb
-  ```
-- **Windows (Git Bash)**: Download `hara-windows-x86_64.zip`, extract `hara.exe`, and add its directory to PATH.
+```bash
+curl -fsSL https://raw.githubusercontent.com/meQlause/hara-cli/main/install.sh | bash
+```
+
+This will:
+1. Detect your OS (Linux or Git Bash/Windows).
+2. Download the correct binary from the [latest GitHub Release](https://github.com/meQlause/hara-cli/releases/latest).
+3. Install it to `~/.local/bin/hara` (or `hara.exe` on Windows).
+4. Auto-add `~/.local/bin` to your `PATH` in `~/.bashrc` if it isn't there already.
+
+After install, reload your shell:
+```bash
+source ~/.bashrc   # or restart Git Bash / terminal
+hara --version
+```
 
 ---
+
+### Option B — Manual Download
+
+1. Go to the [Releases page](https://github.com/meQlause/hara-cli/releases/latest) and download the binary for your OS.
+2. Extract and move the binary:
+
+**Linux:**
+```bash
+tar -xzf hara-linux-x86_64.tar.gz
+mkdir -p ~/.local/bin
+mv hara ~/.local/bin/
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+```
+
+**Git Bash on Windows:**
+```bash
+unzip hara-windows-x86_64.zip
+mkdir -p "$HOME/.local/bin"
+mv hara.exe "$HOME/.local/bin/"
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+```
+
+3. Verify:
+```bash
+hara --version
+```
+
+---
+
 
 ## Commands
 
