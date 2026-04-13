@@ -215,7 +215,7 @@ dependencies = [
 
 [[package]]
 name = "hara"
-version = "0.1.0"
+version = "0.2.78"
 dependencies = [
  "assert_cmd",
  "clap",

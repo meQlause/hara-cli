@@ -25,22 +25,6 @@ fn foundryup_path() -> PathBuf {
     PathBuf::from("foundryup")
 }
 
-/// Run a process, streaming stdout/stderr. Returns Err on non-zero exit.
-fn run_cmd(prog: &str, args: &[&str]) -> Result<(), String> {
-    let status = Command::new(prog)
-        .args(args)
-        .stdin(Stdio::inherit())
-        .stdout(Stdio::inherit())
-        .stderr(Stdio::inherit())
-        .status()
-        .map_err(|e| format!("Failed to launch `{prog}`: {e}"))?;
-
-    if !status.success() {
-        return Err(format!("`{prog}` exited with non-zero status"));
-    }
-    Ok(())
-}
-
 pub fn run() -> Result<(), String> {
     println!("Installing Foundry for HARA development...\n");
 
@@ -78,11 +62,23 @@ pub fn run() -> Result<(), String> {
     println!("\nRunning foundryup to install forge/cast/anvil...");
 
     let foundryup = foundryup_path();
-    let status = Command::new(&foundryup)
-        .stdin(Stdio::inherit())
-        .stdout(Stdio::inherit())
-        .stderr(Stdio::inherit())
-        .status();
+    let shell = which_shell();
+
+    let status = if cfg!(windows) {
+        let unix_path = foundryup.to_string_lossy().replace('\\', "/");
+        Command::new(&shell)
+            .args(["-c", &unix_path])
+            .stdin(Stdio::inherit())
+            .stdout(Stdio::inherit())
+            .stderr(Stdio::inherit())
+            .status()
+    } else {
+        Command::new(&foundryup)
+            .stdin(Stdio::inherit())
+            .stdout(Stdio::inherit())
+            .stderr(Stdio::inherit())
+            .status()
+    };
 
     match status {
         Ok(s) if s.success() => {}
