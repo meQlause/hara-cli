@@ -61,6 +61,7 @@ case "$ASSET" in
     ;;
 esac
 
+# ── Install ───────────────────────────────────────────────────────────────────
 mkdir -p "$INSTALL_DIR"
 
 if [[ "${IS_WINDOWS:-false}" == "true" ]]; then
