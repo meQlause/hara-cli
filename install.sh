@@ -60,8 +60,17 @@ case "$ASSET" in
     ;;
 esac
 
+# ── Install ───────────────────────────────────────────────────────────────────
 mkdir -p "$INSTALL_DIR"
-install -m 755 "${TMP_DIR}/${BIN_NAME}" "${INSTALL_DIR}/${BIN_NAME}"
+
+if [[ "$OS" == *"MINGW"* || "$OS" == *"MSYS"* || "$OS" == *"CYGWIN"* ]]; then
+  # On Windows/Git Bash, ensure we don't have a stale extensionless 'hara' file
+  # which can confuse the shell when trying to run 'hara.exe'.
+  rm -f "${INSTALL_DIR}/hara"
+fi
+
+echo "📦 Installing to ${INSTALL_DIR}..."
+cp "${TMP_DIR}/${BIN_NAME}" "${INSTALL_DIR}/${BIN_NAME}"
 chmod +x "${INSTALL_DIR}/${BIN_NAME}"
 rm -rf "$TMP_DIR"
 
