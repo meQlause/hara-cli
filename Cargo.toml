@@ -1,0 +1,21 @@
+[package]
+name = "hara"
+version = "0.1.0"
+edition = "2021"
+description = "A CLI scaffolding tool for Foundry upgradeable smart contracts using the Diamond Storage Pattern"
+license = "MIT"
+repository = "https://github.com/meQlause/hara-cli"
+maintainer = "meQlause <contact@ardial.my.id>"
+
+[[bin]]
+name = "hara"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+heck = "0.5"
+
+[dev-dependencies]
+assert_cmd = "2.2.0"
+predicates = "3.1.4"
+tempfile = "3.27.0"
