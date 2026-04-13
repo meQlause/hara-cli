@@ -5,7 +5,7 @@ use crate::commands;
 #[derive(Parser)]
 #[command(
     name = "hara",
-    version = "0.1.0",
+    version,
     about = "Scaffold upgradeable smart contract structures for Foundry x HARA"
 )]
 pub struct Cli {

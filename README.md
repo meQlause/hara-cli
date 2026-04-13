@@ -7,7 +7,7 @@
 ### Option A — One-liner (Linux & Git Bash on Windows) ⚡
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/meQlause/hara-cli/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/meQlause/hara-cli/master/install.sh | bash
 ```
 
 This will:

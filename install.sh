@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ──────────────────────────────────────────────────────────────────────────────
 # HARA CLI Installer
-# Usage: curl -fsSL https://raw.githubusercontent.com/meQlause/hara-cli/main/install.sh | bash
+# Usage: curl -fsSL https://raw.githubusercontent.com/meQlause/hara-cli/master/install.sh | bash
 # ──────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
