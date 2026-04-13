@@ -135,14 +135,12 @@ pub fn run() -> Result<(), String> {
     forge(&[
         "install",
         "openzeppelin/openzeppelin-contracts@v5.0.1",
-        "--no-commit",
     ])?;
 
     println!("\n📥 Installing OpenZeppelin Upgradeable Contracts v5.0.1...");
     forge(&[
         "install",
         "openzeppelin/openzeppelin-contracts-upgradeable@v5.0.1",
-        "--no-commit",
     ])?;
 
     println!("\n📥 Installing Forge Standard Library...");
