@@ -61,10 +61,16 @@ pub fn run() -> Result<(), String> {
         .map_err(|e| format!("Failed to run installer (requires bash + curl): {e}"))?;
 
     if !status.success() {
-        return Err(
-            "Foundry installer failed.\n  Make sure curl and bash (or Git Bash) are available."
-                .to_string(),
-        );
+        let fpath = foundryup_path();
+        if fpath.exists() && fpath.to_string_lossy() != "foundryup" {
+            println!("\n[Note] Foundry installer returned non-zero (likely shell detection failure), but foundryup was found.");
+            println!("Proceeding with installation...");
+        } else {
+            return Err(
+                "Foundry installer failed.\n  Make sure curl and bash (or Git Bash) are available."
+                    .to_string(),
+            );
+        }
     }
 
     println!("\nfoundryup downloaded.");
