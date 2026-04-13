@@ -149,7 +149,7 @@ pub fn run() -> Result<(), String> {
     ])?;
 
     println!("\nInstalling Forge Standard Library...");
-    forge(&["install", "foundry-rs/forge-std", "--no-commit"])?;
+    forge(&["install", "foundry-rs/forge-std"])?;
 
     println!("\nWriting foundry.toml (HARA standard)...");
     fs::write("foundry.toml", FOUNDRY_TOML)
