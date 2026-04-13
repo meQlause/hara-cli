@@ -20,6 +20,7 @@ case "$OS" in
     # Git Bash / MSYS2 on Windows
     ASSET="hara-windows-x86_64.zip"
     BIN_NAME="hara.exe"
+    IS_WINDOWS=true
     ;;
   Darwin*)
     echo "macOS is not yet supported by this installer."
@@ -61,8 +62,22 @@ case "$ASSET" in
 esac
 
 mkdir -p "$INSTALL_DIR"
-install -m 755 "${TMP_DIR}/${BIN_NAME}" "${INSTALL_DIR}/${BIN_NAME}"
-chmod +x "${INSTALL_DIR}/${BIN_NAME}"
+
+if [[ "${IS_WINDOWS:-false}" == "true" ]]; then
+  # Install the actual .exe binary
+  install -m 755 "${TMP_DIR}/${BIN_NAME}" "${INSTALL_DIR}/${BIN_NAME}"
+  # Write a thin shim script named 'hara' (no extension) so Git Bash
+  # can find and execute it via PATH without needing the .exe suffix
+  cat > "${INSTALL_DIR}/hara" <<'SHIM'
+#!/usr/bin/env bash
+exec "$(dirname "$(realpath "$0")")/hara.exe" "$@"
+SHIM
+  chmod +x "${INSTALL_DIR}/hara"
+else
+  install -m 755 "${TMP_DIR}/${BIN_NAME}" "${INSTALL_DIR}/${BIN_NAME}"
+  chmod +x "${INSTALL_DIR}/${BIN_NAME}"
+fi
+
 rm -rf "$TMP_DIR"
 
 echo "✅ HARA ${LATEST} installed to: ${INSTALL_DIR}/${BIN_NAME}"
