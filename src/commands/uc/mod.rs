@@ -5,18 +5,16 @@ use crate::utils::{fs as ufs, names::ContractNames, prompt};
 
 const DIRS: &[&str] = &["src", "src/libraries", "script", "test", ".github/workflows"];
 
-/// Entry point for `hara uc <name>`.
 pub fn run(raw_name: &str) -> Result<(), String> {
-    // Guard: must be run from a Foundry project root
     if !Path::new("foundry.toml").exists() {
         return Err(
-            "❌ [ERROR] 'foundry.toml' not found. This command must be run from the root of a Foundry project.".to_string()
+            "[ERROR] 'foundry.toml' not found. This command must be run from the root of a Foundry project.".to_string()
         );
     }
 
     let names = ContractNames::from_raw(raw_name);
 
-    println!("🔨 Scaffolding upgradeable contract: {}\n", names.pascal);
+    println!("Scaffolding upgradeable contract: {}\n", names.pascal);
 
     if prompt::ask_reset(DIRS) {
         ufs::reset_dirs(DIRS)?;
@@ -24,7 +22,6 @@ pub fn run(raw_name: &str) -> Result<(), String> {
 
     ufs::ensure_dirs(DIRS)?;
 
-    // --- Contract-specific files (always overwrite) ---
     ufs::write_file(
         &format!("src/{}.sol", names.pascal),
         &templates::contract::render(&names),
@@ -85,7 +82,6 @@ pub fn run(raw_name: &str) -> Result<(), String> {
         true,
     )?;
 
-    // --- Shared library files (create only if missing) ---
     ufs::write_if_missing(
         "src/libraries/Structs.sol",
         &templates::structs::render(),
@@ -101,6 +97,6 @@ pub fn run(raw_name: &str) -> Result<(), String> {
         &templates::events::render(),
     )?;
 
-    println!("\n✅ Done!");
+    println!("\nDone!");
     Ok(())
 }

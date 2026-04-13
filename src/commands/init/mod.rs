@@ -54,18 +54,12 @@ GAS_LIMIT=30000000
 GAS_PRICE=0
 ";
 
-// ── Forge binary resolution ────────────────────────────────────────────────────
-
-/// Finds the `forge` binary, checking the Foundry install directory first
-/// before falling back to whatever is on PATH.
-/// Works on Windows (Git Bash & native), Linux, and macOS.
 fn forge_bin() -> PathBuf {
     let home = env::var("USERPROFILE")
         .or_else(|_| env::var("HOME"))
         .unwrap_or_default();
 
     let mut candidates: Vec<PathBuf> = vec![
-        // Standard Foundry install location on all platforms
         PathBuf::from(&home).join(".foundry").join("bin").join("forge"),
     ];
 
@@ -111,28 +105,22 @@ fn forge(args: &[&str]) -> Result<(), String> {
     Ok(())
 }
 
-// ── Entry point ───────────────────────────────────────────────────────────────
 
 pub fn run() -> Result<(), String> {
-    println!("🚀 Initialising HARA Foundry project...\n");
+    println!("Initialising HARA Foundry project...\n");
 
-    // ── 1. forge init ──────────────────────────────────────────────────────────
     if Path::new("foundry.toml").exists() {
         println!("  ─  Skipping forge init (foundry.toml already exists)");
     } else {
-        println!("📦 Running forge init...");
-        // --force allows initialising in a non-empty directory.
-        // --no-git skips git init (we don't require git for scaffolding).
-        // If --no-git fails (older forge), retry without it.
+        println!("Running forge init...");
         let result = forge(&["init", "--force", "--no-git"]);
         if result.is_err() {
             forge(&["init", "--force"])?;
         }
     }
 
-    // ── 2. Ensure a git repo exists (forge install uses git submodules) ────────
     if !Path::new(".git").exists() {
-        println!("\n🔧 Initialising git repository (required for forge install)...");
+        println!("\nInitialising git repository (required for forge install)...");
         let status = Command::new("git")
             .args(["init"])
             .stdin(Stdio::inherit())
@@ -148,53 +136,50 @@ pub fn run() -> Result<(), String> {
         println!("\n  ─  Git repository already exists, skipping git init");
     }
 
-    // ── 3. Install OpenZeppelin dependencies ───────────────────────────────────
-    println!("\n📥 Installing OpenZeppelin Contracts v5.0.1...");
+    println!("\nInstalling OpenZeppelin Contracts v5.0.1...");
     forge(&[
         "install",
         "openzeppelin/openzeppelin-contracts@v5.0.1",
     ])?;
 
-    println!("\n📥 Installing OpenZeppelin Upgradeable Contracts v5.0.1...");
+    println!("\nInstalling OpenZeppelin Upgradeable Contracts v5.0.1...");
     forge(&[
         "install",
         "openzeppelin/openzeppelin-contracts-upgradeable@v5.0.1",
     ])?;
 
-    println!("\n📥 Installing Forge Standard Library...");
+    println!("\nInstalling Forge Standard Library...");
     forge(&["install", "foundry-rs/forge-std", "--no-commit"])?;
 
-    // ── 4. Write config files ──────────────────────────────────────────────────
-    println!("\n📝 Writing foundry.toml (HARA standard)...");
+    println!("\nWriting foundry.toml (HARA standard)...");
     fs::write("foundry.toml", FOUNDRY_TOML)
         .map_err(|e| format!("Failed to write foundry.toml: {e}"))?;
     println!("  ✔  foundry.toml");
 
-    println!("\n📝 Writing remappings.txt...");
+    println!("\nWriting remappings.txt...");
     fs::write("remappings.txt", REMAPPINGS)
         .map_err(|e| format!("Failed to write remappings.txt: {e}"))?;
     println!("  ✔  remappings.txt");
 
     if !Path::new(".env").exists() {
-        println!("\n📝 Writing .env...");
+        println!("\nWriting .env...");
         fs::write(".env", DOT_ENV).map_err(|e| format!("Failed to write .env: {e}"))?;
         println!("  ✔  .env");
     } else {
         println!("\n  ─  Skipping .env (already exists — not overwritten to protect secrets)");
     }
 
-    println!("\n📝 Writing .env.example...");
+    println!("\nWriting .env.example...");
     fs::write(".env.example", DOT_ENV_EXAMPLE)
         .map_err(|e| format!("Failed to write .env.example: {e}"))?;
     println!("  ✔  .env.example");
 
     append_gitignore_entry(".env")?;
 
-    // ── 5. Verify build ────────────────────────────────────────────────────────
-    println!("\n🔨 Running forge build to verify configuration...");
+    println!("\nRunning forge build to verify configuration...");
     forge(&["build"])?;
 
-    println!("\n✅ HARA project ready!");
+    println!("\nHARA project ready!");
     println!();
     println!("  Next steps:");
     println!("    1. Fill in your PRIVATE_KEY in .env");

@@ -2,9 +2,6 @@ use std::env;
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
 
-/// Returns the path to the foundryup binary, searching known install locations.
-/// On Windows (including Git Bash), Foundry installs to %USERPROFILE%\.foundry\bin.
-/// On Linux/macOS it installs to ~/.foundry/bin.
 fn foundryup_path() -> PathBuf {
     let home = env::var("USERPROFILE")
         .or_else(|_| env::var("HOME"))
@@ -45,19 +42,15 @@ fn run_cmd(prog: &str, args: &[&str]) -> Result<(), String> {
 }
 
 pub fn run() -> Result<(), String> {
-    println!("🔧 Installing Foundry for HARA development...\n");
+    println!("Installing Foundry for HARA development...\n");
 
-    // ── Step 1: Download and run the installer ────────────────────────────────
-    // The official installer is a shell script — we need bash + curl for this step.
-    // Both Git Bash on Windows and Linux/macOS have these available.
-    println!("⬇️  Downloading foundryup installer...");
+    println!("⬇️Downloading foundryup installer...");
 
     #[cfg(windows)]
     let install_cmd = "curl -fsSL https://foundry.paradigm.xyz | bash";
     #[cfg(not(windows))]
     let install_cmd = "curl -fsSL https://foundry.paradigm.xyz | bash";
 
-    // Use bash (available in Git Bash and Linux)
     let shell = which_shell();
     let status = Command::new(&shell)
         .args(["-c", install_cmd])
@@ -74,10 +67,9 @@ pub fn run() -> Result<(), String> {
         );
     }
 
-    println!("\n✅ foundryup downloaded.");
+    println!("\nfoundryup downloaded.");
 
-    // ── Step 2: Run foundryup to place forge/cast/anvil ───────────────────────
-    println!("\n🔄 Running foundryup to install forge/cast/anvil...");
+    println!("\nRunning foundryup to install forge/cast/anvil...");
 
     let foundryup = foundryup_path();
     let status = Command::new(&foundryup)
@@ -90,26 +82,26 @@ pub fn run() -> Result<(), String> {
         Ok(s) if s.success() => {}
         Ok(_) => {
             println!();
-            println!("⚠️  foundryup returned non-zero.");
+            println!("foundryup returned non-zero.");
             println!("    Try restarting your terminal and running: foundryup");
             return Ok(());
         }
         Err(e) => {
             println!();
-            println!("⚠️  Could not run foundryup automatically ({e}).");
+            println!("Could not run foundryup automatically ({e}).");
             println!("    Restart your terminal and run: foundryup");
             return Ok(());
         }
     }
 
     println!();
-    println!("✅ Foundry installed successfully!");
+    println!("Foundry installed successfully!");
     println!();
     println!("   forge  — smart contract build tool");
     println!("   cast   — CLI for EVM interactions");
     println!("   anvil  — local Ethereum devnet");
     println!();
-    println!("👉 Next step: cd into your project folder and run:");
+    println!("Next step: cd into your project folder and run:");
     println!("   hara init");
     Ok(())
 }

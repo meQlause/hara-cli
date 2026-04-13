@@ -1,7 +1,6 @@
 use clap::{Parser, Subcommand};
 use crate::commands;
 
-/// hara — Foundry smart contract scaffolding tool
 #[derive(Parser)]
 #[command(
     name = "hara",
