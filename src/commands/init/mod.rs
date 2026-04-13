@@ -130,7 +130,25 @@ pub fn run() -> Result<(), String> {
         }
     }
 
-    // ── 2. Install OpenZeppelin dependencies ───────────────────────────────────
+    // ── 2. Ensure a git repo exists (forge install uses git submodules) ────────
+    if !Path::new(".git").exists() {
+        println!("\n🔧 Initialising git repository (required for forge install)...");
+        let status = Command::new("git")
+            .args(["init"])
+            .stdin(Stdio::inherit())
+            .stdout(Stdio::inherit())
+            .stderr(Stdio::inherit())
+            .status()
+            .map_err(|e| format!("Failed to run git init: {e}"))?;
+        if !status.success() {
+            return Err("git init failed. Make sure git is installed.".to_string());
+        }
+        println!("  ✔  git init");
+    } else {
+        println!("\n  ─  Git repository already exists, skipping git init");
+    }
+
+    // ── 3. Install OpenZeppelin dependencies ───────────────────────────────────
     println!("\n📥 Installing OpenZeppelin Contracts v5.0.1...");
     forge(&[
         "install",
@@ -146,7 +164,7 @@ pub fn run() -> Result<(), String> {
     println!("\n📥 Installing Forge Standard Library...");
     forge(&["install", "foundry-rs/forge-std", "--no-commit"])?;
 
-    // ── 3. Write config files ──────────────────────────────────────────────────
+    // ── 4. Write config files ──────────────────────────────────────────────────
     println!("\n📝 Writing foundry.toml (HARA standard)...");
     fs::write("foundry.toml", FOUNDRY_TOML)
         .map_err(|e| format!("Failed to write foundry.toml: {e}"))?;
@@ -172,7 +190,7 @@ pub fn run() -> Result<(), String> {
 
     append_gitignore_entry(".env")?;
 
-    // ── 4. Verify build ────────────────────────────────────────────────────────
+    // ── 5. Verify build ────────────────────────────────────────────────────────
     println!("\n🔨 Running forge build to verify configuration...");
     forge(&["build"])?;
 

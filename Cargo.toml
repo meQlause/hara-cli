@@ -1,8 +1,8 @@
 [package]
 name = "hara"
-version = "0.2.6"
+version = "0.2.7"
 edition = "2021"
-description = "A CLI scaffolding tool for Foundry upgradeable smart contracts using the Diamond Storage Pattern"
+description = "A CLI scaffolding tool for HARA"
 license = "MIT"
 repository = "https://github.com/meQlause/hara-cli"
 
