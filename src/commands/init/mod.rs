@@ -119,6 +119,8 @@ jspm_packages/
 # dotenv environment variables file
 .env.test
 .env.production
+
+lib
 "#;
 
 use crate::utils::forge::forge;

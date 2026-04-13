@@ -32,14 +32,14 @@ case "$OS" in
     ;;
 esac
 
-echo "🔍 Fetching latest HARA release..."
+echo "Fetching latest HARA release..."
 LATEST=$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" \
   | grep '"tag_name"' \
   | head -1 \
   | sed 's/.*"tag_name": *"\(.*\)".*/\1/')
 
 if [[ -z "$LATEST" ]]; then
-  echo "❌ Could not determine latest release. Check your internet connection."
+  echo "Could not determine latest release. Check your internet connection."
   exit 1
 fi
 
@@ -48,10 +48,10 @@ echo "   Latest version: $LATEST"
 DOWNLOAD_URL="https://github.com/${REPO}/releases/download/${LATEST}/${ASSET}"
 TMP_DIR="$(mktemp -d)"
 
-echo "⬇️  Downloading ${ASSET}..."
+echo "⬇Downloading ${ASSET}..."
 curl -fsSL "$DOWNLOAD_URL" -o "${TMP_DIR}/${ASSET}"
 
-echo "📦 Extracting..."
+echo "Extracting..."
 case "$ASSET" in
   *.tar.gz)
     tar -xzf "${TMP_DIR}/${ASSET}" -C "$TMP_DIR"
@@ -81,11 +81,11 @@ fi
 
 rm -rf "$TMP_DIR"
 
-echo "✅ HARA ${LATEST} installed to: ${INSTALL_DIR}/${BIN_NAME}"
+echo "HARA ${LATEST} installed to: ${INSTALL_DIR}/${BIN_NAME}"
 
 if ! echo "$PATH" | grep -q "$INSTALL_DIR"; then
   echo ""
-  echo "⚠️  ${INSTALL_DIR} is not in your PATH."
+  echo "${INSTALL_DIR} is not in your PATH."
   echo "   Add the following line to your ~/.bashrc (or ~/.bash_profile):"
   echo ""
   echo "     export PATH=\"\$HOME/.local/bin:\$PATH\""
@@ -108,7 +108,7 @@ if ! echo "$PATH" | grep -q "$INSTALL_DIR"; then
 fi
 
 echo ""
-echo "🚀 Get started:"
+echo "Get started:"
 echo "   hara install   — install Foundry"
 echo "   hara init      — initialise a HARA Foundry project"
 echo "   hara uc <Name> — scaffold an upgradeable contract"
