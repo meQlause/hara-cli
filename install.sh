@@ -62,6 +62,7 @@ esac
 
 mkdir -p "$INSTALL_DIR"
 install -m 755 "${TMP_DIR}/${BIN_NAME}" "${INSTALL_DIR}/${BIN_NAME}"
+chmod +x "${INSTALL_DIR}/${BIN_NAME}"
 rm -rf "$TMP_DIR"
 
 echo "✅ HARA ${LATEST} installed to: ${INSTALL_DIR}/${BIN_NAME}"
