@@ -54,8 +54,11 @@ GAS_PRICE=0
 ";
 
 fn sh(cmd: &str) -> Result<(), String> {
+    // Prepend ~/.foundry/bin so forge/cast/anvil are available even when the
+    // shell hasn't been reloaded after `hara install`.
+    let wrapped = format!(r#"export PATH="$HOME/.foundry/bin:$PATH"; {cmd}"#);
     let status = Command::new("bash")
-        .args(["-c", cmd])
+        .args(["-c", &wrapped])
         .stdin(Stdio::inherit())
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())

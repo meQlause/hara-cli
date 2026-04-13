@@ -23,7 +23,7 @@ pub fn run() -> Result<(), String> {
     let status = Command::new("bash")
         .args([
             "-c",
-            r#"source ~/.bashrc 2>/dev/null || true; source ~/.bash_profile 2>/dev/null || true; foundryup"#,
+            r#"export PATH="$HOME/.foundry/bin:$PATH"; source ~/.bashrc 2>/dev/null || true; source ~/.bash_profile 2>/dev/null || true; foundryup"#,
         ])
         .stdin(Stdio::inherit())
         .stdout(Stdio::inherit())
