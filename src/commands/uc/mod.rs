@@ -1,7 +1,7 @@
 mod templates;
 
 use std::path::Path;
-use crate::utils::{fs as ufs, names::ContractNames, prompt};
+use crate::utils::{fs as ufs, names::ContractNames, prompt, forge::forge};
 
 const DIRS: &[&str] = &["src", "src/libraries", "script", "test", ".github/workflows"];
 
@@ -96,6 +96,9 @@ pub fn run(raw_name: &str) -> Result<(), String> {
         "src/libraries/Events.sol",
         &templates::events::render(),
     )?;
+
+    println!("\n🔨 Running forge build to verify configuration...");
+    forge(&["build"])?;
 
     println!("\nDone!");
     Ok(())

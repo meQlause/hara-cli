@@ -8,10 +8,11 @@ pragma solidity ^0.8.29;
 
 import {{Initializable}} from "@openzeppelin-upgradeable/contracts/proxy/utils/Initializable.sol";
 import {{OwnableUpgradeable}} from "@openzeppelin-upgradeable/contracts/access/OwnableUpgradeable.sol";
+import {{UUPSUpgradeable}} from "@openzeppelin-upgradeable/contracts/proxy/utils/UUPSUpgradeable.sol";
 import {{ {name}View}} from "./libraries/{name}View.sol";
 import {{Lib{name}Storage}} from "./libraries/{name}Storage.sol";
 
-contract {name} is Initializable, OwnableUpgradeable, {name}View {{
+contract {name} is Initializable, OwnableUpgradeable, UUPSUpgradeable, {name}View {{
     using Lib{name}Storage for *;
 
     function initialize(address adminOwner) public initializer {{
@@ -27,6 +28,9 @@ contract {name} is Initializable, OwnableUpgradeable, {name}View {{
     function exampleAction(uint256 id) public virtual {{
         // Lib{name}Storage.s().idToCounter[id]++;
     }}
+
+    /// @dev Required by the UUPS pattern to restrict who can upgrade the contract.
+    function _authorizeUpgrade(address newImplementation) internal override onlyOwner {{}}
 }}
 "#
     )

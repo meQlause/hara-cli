@@ -54,56 +54,74 @@ GAS_LIMIT=30000000
 GAS_PRICE=0
 ";
 
-fn forge_bin() -> PathBuf {
-    let home = env::var("USERPROFILE")
-        .or_else(|_| env::var("HOME"))
-        .unwrap_or_default();
+const GITIGNORE: &str = r#"# Foundry
+out/
+cache/
+broadcast/
+.env
 
-    let mut candidates: Vec<PathBuf> = vec![
-        PathBuf::from(&home).join(".foundry").join("bin").join("forge"),
-    ];
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-    #[cfg(windows)]
-    candidates.push(
-        PathBuf::from(&home)
-            .join(".foundry")
-            .join("bin")
-            .join("forge.exe"),
-    );
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
 
-    for p in &candidates {
-        if p.exists() {
-            return p.clone();
-        }
-    }
+# OS
+.DS_Store
+Thumbs.db
 
-    // Fall back to PATH
-    PathBuf::from(if cfg!(windows) { "forge.exe" } else { "forge" })
-}
+# Logs
+*.log
 
-/// Runs a forge subcommand with the resolved binary, streaming I/O.
-fn forge(args: &[&str]) -> Result<(), String> {
-    let bin = forge_bin();
-    let display = format!("forge {}", args.join(" "));
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
 
-    let status = Command::new(&bin)
-        .args(args)
-        .stdin(Stdio::inherit())
-        .stdout(Stdio::inherit())
-        .stderr(Stdio::inherit())
-        .status()
-        .map_err(|e| {
-            format!(
-                "Failed to launch `{display}`: {e}\n  \
-                 Is Foundry installed? Run: hara install"
-            )
-        })?;
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
 
-    if !status.success() {
-        return Err(format!("`{display}` exited with non-zero status"));
-    }
-    Ok(())
-}
+# nyc test coverage
+.nyc_output
+
+# Dependency directories
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env.test
+.env.production
+"#;
+
+use crate::utils::forge::forge;
 
 
 pub fn run() -> Result<(), String> {
@@ -174,7 +192,16 @@ pub fn run() -> Result<(), String> {
         .map_err(|e| format!("Failed to write .env.example: {e}"))?;
     println!("  ✔  .env.example");
 
-    append_gitignore_entry(".env")?;
+    // Write .gitignore if it doesn't exist
+    if !Path::new(".gitignore").exists() {
+        println!("\nWriting .gitignore...");
+        fs::write(".gitignore", GITIGNORE)
+            .map_err(|e| format!("Failed to write .gitignore: {e}"))?;
+        println!("  ✔  .gitignore");
+    } else {
+        println!("\n  ─  Skipping .gitignore (already exists)");
+        append_gitignore_entry(".env")?;
+    }
 
     println!("\nRunning forge build to verify configuration...");
     forge(&["build"])?;
