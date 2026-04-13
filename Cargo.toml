@@ -1,6 +1,6 @@
 [package]
 name = "hara"
-version = "0.2.71"
+version = "0.2.72"
 edition = "2021"
 description = "A CLI scaffolding tool for HARA"
 license = "MIT"

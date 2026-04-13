@@ -137,19 +137,19 @@ pub fn run() -> Result<(), String> {
     }
 
     println!("\nInstalling OpenZeppelin Contracts v5.0.1...");
-    forge(&[
-        "install",
-        "openzeppelin/openzeppelin-contracts@v5.0.1",
-    ])?;
+    if let Err(e) = forge(&["install", "openzeppelin/openzeppelin-contracts@v5.0.1"]) {
+        println!("  ─  Note: {} (skipping...)", e);
+    }
 
     println!("\nInstalling OpenZeppelin Upgradeable Contracts v5.0.1...");
-    forge(&[
-        "install",
-        "openzeppelin/openzeppelin-contracts-upgradeable@v5.0.1",
-    ])?;
+    if let Err(e) = forge(&["install", "openzeppelin/openzeppelin-contracts-upgradeable@v5.0.1"]) {
+        println!("  ─  Note: {} (skipping...)", e);
+    }
 
     println!("\nInstalling Forge Standard Library...");
-    forge(&["install", "foundry-rs/forge-std"])?;
+    if let Err(e) = forge(&["install", "foundry-rs/forge-std"]) {
+        println!("  ─  Note: {} (skipping...)", e);
+    }
 
     println!("\nWriting foundry.toml (HARA standard)...");
     fs::write("foundry.toml", FOUNDRY_TOML)
