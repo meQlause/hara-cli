@@ -5,7 +5,6 @@ edition = "2021"
 description = "A CLI scaffolding tool for Foundry upgradeable smart contracts using the Diamond Storage Pattern"
 license = "MIT"
 repository = "https://github.com/meQlause/hara-cli"
-maintainer = "meQlause <contact@ardial.my.id>"
 
 [[bin]]
 name = "hara"

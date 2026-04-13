@@ -5,7 +5,7 @@ pub fn render(n: &ContractNames) -> String {
     let camel = &n.camel;
     let lower = &n.lower;
     format!(
-        r#"// SPDX-License-Identifier: UNLICENSED
+        r#"// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.29;
 
 import {{ModularStorage}} from "./Structs.sol";

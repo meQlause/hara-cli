@@ -1,5 +1,5 @@
 pub fn render() -> String {
-    r#"// SPDX-License-Identifier: UNLICENSED
+    r#"// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.29;
 
 struct ModularStorage {

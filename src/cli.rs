@@ -15,6 +15,12 @@ pub struct Cli {
 
 #[derive(Subcommand)]
 pub enum Commands {
+    /// Install Foundry (forge, cast, anvil) via the official installer — Linux / Git Bash only
+    Install,
+
+    /// Initialise a HARA-standard Foundry project in the current directory
+    Init,
+
     /// Scaffold an Upgradeable Contract using the Diamond Storage Pattern
     Uc {
         /// Contract name in PascalCase (e.g. MyToken)
@@ -26,7 +32,9 @@ pub fn run() {
     let cli = Cli::parse();
 
     let result = match cli.command {
-        Commands::Uc { name } => commands::uc::run(&name),
+        Commands::Install          => commands::install::run(),
+        Commands::Init             => commands::init::run(),
+        Commands::Uc { name }      => commands::uc::run(&name),
     };
 
     if let Err(e) = result {

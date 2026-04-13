@@ -1,14 +1,11 @@
 use std::io::{self, BufRead, Write};
 
-/// Ask the user for confirmation to reset the target directories.
-/// Returns `true` if the user confirms, `false` otherwise.
 pub fn ask_reset(dirs: &[&str]) -> bool {
     let mut stdin = io::stdin().lock();
     let mut stdout = io::stdout();
     ask_reset_internal(dirs, &mut stdin, &mut stdout)
 }
 
-/// Internal implementation of `ask_reset` for testability.
 pub fn ask_reset_internal<R: BufRead, W: Write>(
     dirs: &[&str],
     reader: &mut R,

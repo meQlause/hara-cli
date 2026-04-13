@@ -3,7 +3,7 @@ mod templates;
 use std::path::Path;
 use crate::utils::{fs as ufs, names::ContractNames, prompt};
 
-const DIRS: &[&str] = &["src", "src/libraries", "script", "test"];
+const DIRS: &[&str] = &["src", "src/libraries", "script", "test", ".github/workflows"];
 
 /// Entry point for `hara uc <name>`.
 pub fn run(raw_name: &str) -> Result<(), String> {
@@ -52,6 +52,36 @@ pub fn run(raw_name: &str) -> Result<(), String> {
     ufs::write_file(
         &format!("test/{}.t.sol", names.pascal),
         &templates::test::render(&names),
+        true,
+    )?;
+
+    ufs::write_file(
+        "test/ContractLimits.t.sol",
+        &templates::test_limits::render(&names),
+        true,
+    )?;
+
+    ufs::write_file(
+        ".github/workflows/contract-limits.yml",
+        &templates::workflow_ci::render(&names),
+        true,
+    )?;
+
+    ufs::write_file(
+        &format!("src/{}V2.sol", names.pascal),
+        &templates::contract_v2::render(&names),
+        true,
+    )?;
+
+    ufs::write_file(
+        &format!("src/libraries/{}V2Storage.sol", names.pascal),
+        &templates::storage_v2::render(&names),
+        true,
+    )?;
+
+    ufs::write_file(
+        &format!("script/Upgrade{}.s.sol", names.pascal),
+        &templates::deploy_upgrade::render(&names),
         true,
     )?;
 

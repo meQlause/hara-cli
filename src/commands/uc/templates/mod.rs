@@ -1,8 +1,13 @@
 pub mod contract;
+pub mod contract_v2;
 pub mod deploy;
+pub mod deploy_upgrade;
 pub mod errors;
 pub mod events;
 pub mod storage;
+pub mod storage_v2;
 pub mod structs;
 pub mod test;
+pub mod test_limits;
 pub mod view;
+pub mod workflow_ci;

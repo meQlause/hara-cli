@@ -3,7 +3,7 @@ use crate::utils::names::ContractNames;
 pub fn render(n: &ContractNames) -> String {
     let name = &n.pascal;
     format!(
-        r#"// SPDX-License-Identifier: UNLICENSED
+        r#"// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.29;
 
 import {{Lib{name}Storage}} from "./{name}Storage.sol";

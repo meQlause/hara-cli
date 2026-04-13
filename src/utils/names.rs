@@ -1,7 +1,5 @@
 use heck::{ToPascalCase, ToLowerCamelCase};
 
-/// All case-variants of a contract name derived from raw user input.
-/// Construct once and pass around instead of re-deriving everywhere.
 #[derive(Debug, Clone)]
 pub struct ContractNames {
     /// PascalCase  — e.g. `SimpleContract`

@@ -1,9 +1,6 @@
 use std::fs;
 use std::path::Path;
 
-/// Write `content` to `path`.
-/// - If `overwrite = true` and the file already exists, it warns then overwrites.
-/// - If `overwrite = false` and the file exists, it skips.
 pub fn write_file(path: &str, content: &str, overwrite: bool) -> Result<(), String> {
     let p = Path::new(path);
 
@@ -23,12 +20,10 @@ pub fn write_file(path: &str, content: &str, overwrite: bool) -> Result<(), Stri
     Ok(())
 }
 
-/// Write `content` to `path` only when the file does not already exist.
 pub fn write_if_missing(path: &str, content: &str) -> Result<(), String> {
     write_file(path, content, false)
 }
 
-/// Ensure all directories in `dirs` exist (creates them recursively if needed).
 pub fn ensure_dirs(dirs: &[&str]) -> Result<(), String> {
     for dir in dirs {
         fs::create_dir_all(dir)
@@ -37,7 +32,6 @@ pub fn ensure_dirs(dirs: &[&str]) -> Result<(), String> {
     Ok(())
 }
 
-/// Delete all files inside the specified directories.
 pub fn reset_dirs(dirs: &[&str]) -> Result<(), String> {
     for dir in dirs {
         let p = Path::new(dir);
@@ -64,11 +58,9 @@ mod tests {
         write_file(path_str, "hello", false).unwrap();
         assert_eq!(fs::read_to_string(path_str).unwrap(), "hello");
 
-        // Test skip if exists and overwrite is false
         write_file(path_str, "world", false).unwrap();
         assert_eq!(fs::read_to_string(path_str).unwrap(), "hello");
 
-        // Test overwrite
         write_file(path_str, "world", true).unwrap();
         assert_eq!(fs::read_to_string(path_str).unwrap(), "world");
     }
@@ -99,6 +91,6 @@ mod tests {
         let src_str = src.to_str().unwrap();
         reset_dirs(&[src_str]).unwrap();
 
-        assert!(!src.exists()); // Because we did remove_dir_all
+        assert!(!src.exists()); 
     }
 }
