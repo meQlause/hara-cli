@@ -3,18 +3,20 @@ mod templates;
 use std::path::Path;
 use crate::utils::{fs as ufs, names::ContractNames, prompt, forge::forge};
 
+/// Directories to be created for the upgradeable contract structure.
 const DIRS: &[&str] = &["src", "src/libraries", "script", "test", ".github/workflows"];
 
+/// Orchestrates the scaffolding of an Upgradeable Contract (UC) following the Diamond Storage pattern.
 pub fn run(raw_name: &str) -> Result<(), String> {
     if !Path::new("foundry.toml").exists() {
         return Err(
-            "[ERROR] 'foundry.toml' not found. This command must be run from the root of a Foundry project.".to_string()
+            "'foundry.toml' not found. This command must be run from the root of a Foundry project.".to_string()
         );
     }
 
     let names = ContractNames::from_raw(raw_name);
 
-    println!("Scaffolding upgradeable contract: {}\n", names.pascal);
+    tracing::info!("Scaffolding upgradeable contract: {}", names.pascal);
 
     if prompt::ask_reset(DIRS) {
         ufs::reset_dirs(DIRS)?;
@@ -97,9 +99,9 @@ pub fn run(raw_name: &str) -> Result<(), String> {
         &templates::events::render(),
     )?;
 
-    println!("\n🔨 Running forge build to verify configuration...");
+    tracing::info!("Running forge build to verify configuration...");
     forge(&["build"])?;
 
-    println!("\nDone!");
+    tracing::info!("Done!");
     Ok(())
 }

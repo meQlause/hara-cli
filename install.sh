@@ -13,21 +13,15 @@ OS="$(uname -s)"
 ARCH="$(uname -m)"
 
 case "$OS" in
-  Linux*)
-    ASSET="hara-linux-x86_64.tar.gz"
-    ;;
   MINGW* | MSYS* | CYGWIN*)
-    # Git Bash / MSYS2 on Windows
+    # Windows Git Bash / MSYS2
     ASSET="hara-windows-x86_64.zip"
     BIN_NAME="hara.exe"
     IS_WINDOWS=true
     ;;
-  Darwin*)
-    echo "macOS is not yet supported by this installer."
-    exit 1
-    ;;
   *)
-    echo "Unknown OS: $OS"
+    echo "Error: HARA CLI is specialized for Windows Git Bash / MSYS2 environments."
+    echo "Your OS ($OS) is not supported."
     exit 1
     ;;
 esac
@@ -107,6 +101,6 @@ fi
 
 echo ""
 echo "Get started:"
-echo "   hara install   — install Foundry"
-echo "   hara init      — initialise a HARA Foundry project"
-echo "   hara uc <Name> — scaffold an upgradeable contract"
+echo "   hara foundry install               — install Foundry toolchain"
+echo "   hara foundry init                  — initialise a HARA project"
+echo "   hara foundry contract uc <Name>    — scaffold an upgradeable contract"

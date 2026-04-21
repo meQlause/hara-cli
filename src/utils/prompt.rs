@@ -1,17 +1,19 @@
 use std::io::{self, BufRead, Write};
 
+/// Prompts the user to confirm the reset (deletion) of specific directories.
 pub fn ask_reset(dirs: &[&str]) -> bool {
     let mut stdin = io::stdin().lock();
     let mut stdout = io::stdout();
     ask_reset_internal(dirs, &mut stdin, &mut stdout)
 }
 
+/// Internal logic for prompting reset confirmation, allowing for injected reader/writer for testing.
 pub fn ask_reset_internal<R: BufRead, W: Write>(
     dirs: &[&str],
     reader: &mut R,
     writer: &mut W,
 ) -> bool {
-    writeln!(writer, "⚠️  WARNING: You are about to RESET the following directories:").unwrap();
+    writeln!(writer, "WARNING: You are about to RESET the following directories:").unwrap();
     for dir in dirs {
         writeln!(writer, "   - {}/", dir).unwrap();
     }

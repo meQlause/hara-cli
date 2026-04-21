@@ -2,22 +2,13 @@ use std::env;
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
 
+/// Locates the forge.exe binary, prioritizing the HARA-standard .foundry/bin path.
 pub fn forge_bin() -> PathBuf {
-    let home = env::var("USERPROFILE")
-        .or_else(|_| env::var("HOME"))
-        .unwrap_or_default();
+    let home = env::var("USERPROFILE").unwrap_or_default();
 
-    let mut candidates: Vec<PathBuf> = vec![
-        PathBuf::from(&home).join(".foundry").join("bin").join("forge"),
+    let candidates: Vec<PathBuf> = vec![
+        PathBuf::from(&home).join(".foundry").join("bin").join("forge.exe"),
     ];
-
-    #[cfg(windows)]
-    candidates.push(
-        PathBuf::from(&home)
-            .join(".foundry")
-            .join("bin")
-            .join("forge.exe"),
-    );
 
     for p in &candidates {
         if p.exists() {
@@ -25,10 +16,10 @@ pub fn forge_bin() -> PathBuf {
         }
     }
 
-    // Fall back to PATH
-    PathBuf::from(if cfg!(windows) { "forge.exe" } else { "forge" })
+    PathBuf::from("forge.exe")
 }
 
+/// Executes a forge command with the provided arguments, inheriting standard I/O.
 pub fn forge(args: &[&str]) -> Result<(), String> {
     let bin = forge_bin();
     let display = format!("forge {}", args.join(" "));
@@ -42,7 +33,7 @@ pub fn forge(args: &[&str]) -> Result<(), String> {
         .map_err(|e| {
             format!(
                 "Failed to launch `{display}`: {e}\n  \
-                 Is Foundry installed? Run: hara install"
+                 Is Foundry installed? Run: hara foundry install"
             )
         })?;
 

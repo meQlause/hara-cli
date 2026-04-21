@@ -1,14 +1,15 @@
 use std::fs;
 use std::path::Path;
 
+/// Writes a string content to a file, with an optional overwrite flag.
 pub fn write_file(path: &str, content: &str, overwrite: bool) -> Result<(), String> {
     let p = Path::new(path);
 
     if p.exists() {
         if overwrite {
-            println!("  ⚠️  Overwriting : {}", path);
+            tracing::warn!("Overwriting : {}", path);
         } else {
-            println!("  –  Skipping    : {} (already exists)", path);
+            tracing::info!("  –  Skipping    : {} (already exists)", path);
             return Ok(());
         }
     }
@@ -16,14 +17,16 @@ pub fn write_file(path: &str, content: &str, overwrite: bool) -> Result<(), Stri
     fs::write(p, content)
         .map_err(|e| format!("Failed to write '{}': {}", path, e))?;
 
-    println!("  ✔  Created     : {}", path);
+    tracing::info!("Created     : {}", path);
     Ok(())
 }
 
+/// Helper function to write a file only if it does not already exist.
 pub fn write_if_missing(path: &str, content: &str) -> Result<(), String> {
     write_file(path, content, false)
 }
 
+/// Ensures that a list of directory paths exist, creating them if necessary.
 pub fn ensure_dirs(dirs: &[&str]) -> Result<(), String> {
     for dir in dirs {
         fs::create_dir_all(dir)
@@ -32,6 +35,7 @@ pub fn ensure_dirs(dirs: &[&str]) -> Result<(), String> {
     Ok(())
 }
 
+/// Resets (deletes) a list of directories if they exist.
 pub fn reset_dirs(dirs: &[&str]) -> Result<(), String> {
     for dir in dirs {
         let p = Path::new(dir);
