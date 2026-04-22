@@ -2,8 +2,11 @@ mod cli;
 mod commands;
 mod utils;
 
-#[tokio::main]
-async fn main() {
+use clap::Parser;
+
+fn main() {
+    let cli = cli::Cli::parse();
+
     let filter = tracing_subscriber::EnvFilter::try_from_default_env()
         .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("info"));
 
@@ -12,5 +15,10 @@ async fn main() {
         .compact()
         .init();
 
-    cli::run().await;
+    let runtime = tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .build()
+        .expect("Failed to build tokio runtime");
+
+    runtime.block_on(cli::run(cli));
 }

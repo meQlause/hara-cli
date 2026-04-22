@@ -2094,7 +2094,7 @@ dependencies = [
 
 [[package]]
 name = "hara"
-version = "0.3.0"
+version = "0.3.2"
 dependencies = [
  "alloy",
  "assert_cmd",

@@ -5,8 +5,10 @@ use crate::commands;
 #[derive(Parser)]
 #[command(
     name = "hara",
+    bin_name = "hara",
     version,
-    about = "Scaffold upgradeable smart contract structures for Foundry x HARA"
+    about = "Scaffold upgradeable smart contract structures for Foundry x HARA",
+    arg_required_else_help = true
 )]
 pub struct Cli {
     #[command(subcommand)]
@@ -130,9 +132,7 @@ pub enum ContractCommands {
 }
 
 /// Parses command-line arguments and orchestrates command execution.
-pub async fn run() {
-    let cli = Cli::parse();
-
+pub async fn run(cli: Cli) {
     let result = match cli.command {
         Commands::Hns(hns_args) => match hns_args.command {
             HnsCommands::Register(args) => {

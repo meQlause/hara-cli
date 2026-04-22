@@ -27,13 +27,18 @@ case "$OS" in
 esac
 
 echo "Fetching latest HARA release..."
-LATEST=$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" \
-  | grep '"tag_name"' \
-  | head -1 \
-  | sed 's/.*"tag_name": *"\(.*\)".*/\1/')
+LATEST=$(curl -Ls -o /dev/null -w %{url_effective} "https://github.com/${REPO}/releases/latest" | grep -oE "[^/]+$")
+
+if [[ -z "$LATEST" || "$LATEST" == "latest" ]]; then
+  echo "Could not determine latest release via redirect. falling back to API..."
+  LATEST=$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" \
+    | grep '"tag_name"' \
+    | head -1 \
+    | sed 's/.*"tag_name": *"\(.*\)".*/\1/')
+fi
 
 if [[ -z "$LATEST" ]]; then
-  echo "Could not determine latest release. Check your internet connection."
+  echo "Error: Could not determine latest release version."
   exit 1
 fi
 
