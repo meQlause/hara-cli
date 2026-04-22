@@ -88,6 +88,11 @@ if ! echo "$PATH" | grep -q "$INSTALL_DIR"; then
     PROFILE_FILE="$HOME/.bashrc"
   elif [[ -f "$HOME/.bash_profile" ]]; then
     PROFILE_FILE="$HOME/.bash_profile"
+  else
+    # Default to .bashrc for Git Bash/MSYS2 environments if none exists
+    PROFILE_FILE="$HOME/.bashrc"
+    touch "$PROFILE_FILE"
+    echo "   Created new profile: ${PROFILE_FILE}"
   fi
 
   if [[ -n "$PROFILE_FILE" ]]; then
