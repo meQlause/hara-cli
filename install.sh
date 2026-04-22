@@ -7,6 +7,7 @@ set -euo pipefail
 
 REPO="meQlause/hara-cli"
 BIN_NAME="hara"
+EXE_NAME="${BIN_NAME}"
 INSTALL_DIR="$HOME/.local/bin"
 
 OS="$(uname -s)"
@@ -16,7 +17,7 @@ case "$OS" in
   MINGW* | MSYS* | CYGWIN*)
     # Windows Git Bash / MSYS2
     ASSET="hara-windows-x86_64.zip"
-    BIN_NAME="hara.exe"
+    EXE_NAME="${BIN_NAME}.exe"
     IS_WINDOWS=true
     ;;
   *)
@@ -27,15 +28,10 @@ case "$OS" in
 esac
 
 echo "Fetching latest HARA release..."
-LATEST=$(curl -Ls -o /dev/null -w %{url_effective} "https://github.com/${REPO}/releases/latest" | grep -oE "[^/]+$")
-
-if [[ -z "$LATEST" || "$LATEST" == "latest" ]]; then
-  echo "Could not determine latest release via redirect. falling back to API..."
-  LATEST=$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" \
-    | grep '"tag_name"' \
-    | head -1 \
-    | sed 's/.*"tag_name": *"\(.*\)".*/\1/')
-fi
+LATEST=$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" \
+  | grep '"tag_name"' \
+  | head -1 \
+  | sed 's/.*"tag_name": *"\(.*\)".*/\1/')
 
 if [[ -z "$LATEST" ]]; then
   echo "Error: Could not determine latest release version."
@@ -64,21 +60,21 @@ esac
 mkdir -p "$INSTALL_DIR"
 
 if [[ "${IS_WINDOWS:-false}" == "true" ]]; then
-  install -m 755 "${TMP_DIR}/${BIN_NAME}" "${INSTALL_DIR}/${BIN_NAME}"
-  chmod +x "${INSTALL_DIR}/${BIN_NAME}"
+  install -m 755 "${TMP_DIR}/${EXE_NAME}" "${INSTALL_DIR}/${EXE_NAME}"
+  chmod +x "${INSTALL_DIR}/${EXE_NAME}"
   printf '%s\n' \
     '#!/usr/bin/env bash' \
-    '"$(dirname "${BASH_SOURCE[0]}")/hara.exe" "$@"' \
-    > "${INSTALL_DIR}/hara"
-  chmod +x "${INSTALL_DIR}/hara"
-else
-  install -m 755 "${TMP_DIR}/${BIN_NAME}" "${INSTALL_DIR}/${BIN_NAME}"
+    "\"\$(dirname \"\${BASH_SOURCE[0]}\")/${EXE_NAME}\" \"\$@\"" \
+    > "${INSTALL_DIR}/${BIN_NAME}"
   chmod +x "${INSTALL_DIR}/${BIN_NAME}"
+else
+  install -m 755 "${TMP_DIR}/${EXE_NAME}" "${INSTALL_DIR}/${EXE_NAME}"
+  chmod +x "${INSTALL_DIR}/${EXE_NAME}"
 fi
 
 rm -rf "$TMP_DIR"
 
-echo "HARA ${LATEST} installed to: ${INSTALL_DIR}/${BIN_NAME}"
+echo "HARA ${LATEST} installed to: ${INSTALL_DIR}/${EXE_NAME}"
 
 if ! echo "$PATH" | grep -q "$INSTALL_DIR"; then
   echo ""
