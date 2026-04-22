@@ -84,6 +84,12 @@ pub enum CodexSubcommands {
         /// Path to the .abi.bin file to inspect.
         path: String,
     },
+
+    /// Convert a hex string from a text file into a binary (.bin) file.
+    Bin {
+        /// Path to the text file containing the hex string.
+        path: String,
+    },
 }
 
 /// Arguments for Foundry-related operations.
