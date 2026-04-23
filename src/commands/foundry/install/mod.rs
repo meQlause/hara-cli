@@ -31,6 +31,15 @@ fn run_powershell() -> Result<(), String> {
         Write-Host 'Extracting to .foundry/bin...';
         tar -xzf $dest -C $installDir;
         Remove-Item $dest;
+
+        # Update PATH for Foundry
+        $u = [Environment]::GetEnvironmentVariable('Path', 'User');
+        if ($u -notlike "*$installDir*") {
+            [Environment]::SetEnvironmentVariable('Path', "$installDir;$u", 'User');
+            $env:Path = "$installDir;$env:Path";
+            Write-Host 'Success! Added .foundry/bin to your PATH.';
+        }
+
         Write-Host 'Foundry binaries ready.';
     "#;
 

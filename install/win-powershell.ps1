@@ -13,7 +13,7 @@ Write-Host "`n>>> HARA Installer for Windows PowerShell 5.1 <<<`n" -ForegroundCo
 
 # 1. API Check
 $ApiUrl = "https://api.github.com/repos/$Repo/releases/latest"
-$Release = Invoke-RestMethod -Uri $ApiUrl -Headers @{"Accept"="application/vnd.github.v3+json"} -UseBasicParsing
+$Release = Invoke-RestMethod -Uri $ApiUrl -Headers @{"Accept" = "application/vnd.github.v3+json" } -UseBasicParsing
 $Version = $Release.tag_name
 Write-Host "[+] Found latest version: $Version"
 
