@@ -20,16 +20,17 @@ fn run_powershell() -> Result<(), String> {
         $repo = 'foundry-rs/foundry';
         $api = 'https://api.github.com/repos/' + $repo + '/releases/latest';
         $release = Invoke-RestMethod -Uri $api -UseBasicParsing;
-        $asset = $release.assets | Where-Object { $_.name -like '*win32_amd64.tar.gz' } | Select-Object -First 1;
+        $asset = $release.assets | Where-Object { $_.name -like '*win32_amd64*' -and $_.name -notlike '*attestation*' } | Select-Object -First 1;
         if ($null -eq $asset) { throw 'Foundry Windows asset not found' };
         $url = $asset.browser_download_url;
-        $dest = Join-Path $env:TEMP 'foundry.tar.gz';
-        Write-Host 'Downloading Foundry from GitHub...';
+        $fileName = $asset.name;
+        $dest = Join-Path $env:TEMP $fileName;
+        Write-Host "Downloading Foundry ($fileName) from GitHub...";
         Invoke-WebRequest -Uri $url -OutFile $dest;
         $installDir = Join-Path $HOME '.foundry\bin';
         if (-not (Test-Path $installDir)) { New-Item -ItemType Directory -Path $installDir -Force | Out-Null };
         Write-Host 'Extracting to .foundry/bin...';
-        tar -xzf $dest -C $installDir;
+        if ($fileName.EndsWith('.zip')) { Expand-Archive -Path $dest -DestinationPath $installDir -Force } else { tar -xzf $dest -C $installDir }
         Remove-Item $dest;
 
         # Unblock binaries
