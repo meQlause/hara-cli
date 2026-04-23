@@ -32,6 +32,7 @@ Expand-Archive -Path $ZipFile -DestinationPath $TempDir -Force
 # 4. Install
 $ExeDest = Join-Path $InstallDir "${BinaryName}.exe"
 Move-Item -Path (Join-Path $TempDir "${BinaryName}.exe") -Destination $ExeDest -Force
+Unblock-File -Path $ExeDest
 Write-Host "[+] Binary installed to $ExeDest"
 
 # 5. Path
@@ -43,4 +44,6 @@ if ($UserPath -notlike "*$InstallDir*") {
 }
 
 Remove-Item $TempDir -Recurse -Force
-Write-Host "`n✨ Success! Restart your terminal and run 'hara --version'`n" -ForegroundColor Green
+
+Write-Host "`n✨ Success! Restart your terminal and run 'hara --version'" -ForegroundColor Green
+Write-Host "Note: If blocked by Windows security, run: Unblock-File -Path `"$ExeDest`"" -ForegroundColor Gray

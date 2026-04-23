@@ -32,6 +32,9 @@ fn run_powershell() -> Result<(), String> {
         tar -xzf $dest -C $installDir;
         Remove-Item $dest;
 
+        # Unblock binaries
+        Get-ChildItem -Path $installDir -Filter *.exe | Unblock-File;
+
         # Update PATH for Foundry
         $u = [Environment]::GetEnvironmentVariable('Path', 'User');
         if ($u -notlike "*$installDir*") {
