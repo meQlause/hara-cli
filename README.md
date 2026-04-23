@@ -4,27 +4,37 @@
 
 ## Installation
 
-### Option A — One-liner (Linux & Git Bash on Windows) ⚡
+### Option A — Linux / Debian 🐧
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/meQlause/hara-cli/master/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/meQlause/hara-cli/master/install/debian.sh | bash
 ```
 
 This will:
-1. Detect your OS (Linux or Git Bash/Windows).
-2. Download the correct binary from the [latest GitHub Release](https://github.com/meQlause/hara-cli/releases/latest).
-3. Install it to `~/.local/bin/hara` (or `hara.exe` on Windows).
-4. Auto-add `~/.local/bin` to your `PATH` in `~/.bashrc` if it isn't there already.
+1. Fetch the latest release from GitHub.
+2. Install the binary to `~/.local/bin/hara`.
+3. Automatically add `~/.local/bin` to your `PATH` in `~/.bashrc` or `~/.zshrc`.
 
-After install, reload your shell:
-```bash
-source ~/.bashrc   # or restart Git Bash / terminal
-hara --version
+### Option B — Windows PowerShell 🚀
+
+**For PowerShell 7+ (Core):**
+```powershell
+irm https://raw.githubusercontent.com/meQlause/hara-cli/master/install/powershell.ps1 | iex
 ```
+
+**For Windows PowerShell (5.1):**
+```powershell
+irm https://raw.githubusercontent.com/meQlause/hara-cli/master/install/win-powershell.ps1 | iex
+```
+
+This will:
+1. Fetch the latest version via the GitHub API.
+2. Install the binary to `$HOME\.local\bin\hara.exe`.
+3. Fully automate the **User PATH** configuration and refresh the current session.
 
 ---
 
-### Option B — Manual Download
+### Option C — Manual Download
 
 1. Go to the [Releases page](https://github.com/meQlause/hara-cli/releases/latest) and download the binary for your OS.
 2. Extract and move the binary:
@@ -38,13 +48,11 @@ echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-**Git Bash on Windows:**
-```bash
-unzip hara-windows-x86_64.zip
-mkdir -p "$HOME/.local/bin"
-mv hara.exe "$HOME/.local/bin/"
-echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
-source ~/.bashrc
+**Windows:**
+```powershell
+Expand-Archive -Path hara-windows-x86_64.zip -DestinationPath .
+mkdir -Force "$HOME\.local\bin"
+mv hara.exe "$HOME\.local\bin\"
 ```
 
 3. Verify:
@@ -54,12 +62,10 @@ hara --version
 
 ---
 
-
 ## Commands
 
 > [!IMPORTANT]
-> HARA assumes **Linux or Git Bash** as the shell environment.
-> `hara install` and `hara init` require `bash`, `curl`, and `forge` to be accessible in your PATH.
+> HARA requires Unix-like utilities (`bash`, `curl`) and `forge` (Foundry) to be accessible in your PATH.
 
 ---
 
@@ -74,9 +80,6 @@ hara install
 **What it does:**
 1. Downloads the Foundry installer: `curl -fsSL https://foundry.paradigm.xyz | bash`
 2. Runs `foundryup` to install all Foundry binaries.
-
-> [!NOTE]
-> After installation you may need to restart your terminal for `forge` to be available in PATH. If so, just run `foundryup` manually.
 
 ---
 
@@ -100,38 +103,6 @@ hara init
 5. Creates `.env` (from template, skipped if it exists) and `.env.example`.
 6. Ensures `.env` is in `.gitignore`.
 7. Runs `forge build` to verify the setup.
-
-**Generated `foundry.toml`:**
-```toml
-[profile.default]
-evm_version    = "paris"
-src            = "src"
-out            = "out"
-libs           = ["lib"]
-solc_version   = "0.8.29"
-optimizer      = true
-optimizer_runs = 200
-
-fs_permissions = [{ access = "read", path = "." }]
-
-[rpc_endpoints]
-hara = "${HARA_RPC_URL}"
-
-[profile.ci]
-fuzz.runs   = 512
-gas_reports = ["*"]
-```
-
-**Generated `remappings.txt`:**
-```
-@openzeppelin/=lib/openzeppelin-contracts/
-@openzeppelin-upgradeable/=lib/openzeppelin-contracts-upgradeable/
-@forge-std/=lib/forge-std/
-forge-std/=lib/forge-std/src/
-ds-test/=lib/forge-std/lib/ds-test/src/
-```
-
-After `hara init` completes, fill in your `PRIVATE_KEY` in `.env` and you are ready to scaffold contracts.
 
 ---
 
@@ -169,11 +140,6 @@ hara uc MyToken
     └── ContractLimits.t.sol     # CI: EIP-170 size & 300K gas checks
 ```
 
-**Scaffolding behaviour:**
-- Prompts whether to reset `src/`, `script/`, `test/` before writing.
-- Contract files (V1, V2, Storage, View, Scripts, Tests) are **always overwritten**.
-- Shared libraries (`Structs.sol`, `Errors.sol`, `Events.sol`) are **created once and never overwritten**.
-
 ---
 
 ### Upgrading to V2
@@ -191,21 +157,6 @@ forge script script/UpgradeMyToken.s.sol \
   -vvvv
 ```
 
-The script atomically:
-1. Deploys the new `MyTokenV2` implementation.
-2. Calls `upgradeToAndCall` on the proxy with the `initializeV2` calldata.
-
----
-
-## CI Pipeline
-
-`hara uc` automatically generates `.github/workflows/contract-limits.yml` which:
-- Runs on every `push` and `pull_request`.
-- Checks all contract sizes are **< 24,576 bytes** (EIP-170).
-- Runs `ContractLimitsTest` to enforce **< 300,000 gas** per public call.
-- Runs the full `forge test` suite.
-- Generates and uploads a gas snapshot artifact.
-
 ---
 
 ## Technical Details: Diamond Storage
@@ -222,13 +173,4 @@ bytes32 constant myTokenV2Point = keccak256("mytoken.storage.v2");
 
 ---
 
-## Roadmap & Future Commands 🚀
-
-HARA is actively maintained with new scaffolding templates added continuously. Planned commands:
-
-- `hara fc <Name>` — Scaffold a **Factory Contract** structure.
-- Additional Diamond-compatible utility generators.
-
----
-
-Built with ❤️ for the Foundry ecosystem. HARA is under constant maintenance to ensure compatibility with the latest Foundry and Solidity standards.
+Built with ❤️ for the Foundry ecosystem.
