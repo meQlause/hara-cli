@@ -4,9 +4,55 @@ use std::process::{Command, Stdio};
 
 /// Orchestrates the installation of Foundry.
 pub fn run() -> Result<(), String> {
-    tracing::info!("Installing Foundry for HARA development (Windows Git Bash)...");
+    if cfg!(windows) {
+        return run_powershell();
+    }
 
-    tracing::info!("Downloading foundryup installer...");
+    run_bash()
+}
+
+fn run_powershell() -> Result<(), String> {
+    tracing::info!("Installing Foundry for HARA development (Native PowerShell)...");
+
+    let pwsh_script = r#"
+        $ErrorActionPreference = 'Stop';
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;
+        $repo = 'foundry-rs/foundry';
+        $api = 'https://api.github.com/repos/' + $repo + '/releases/latest';
+        $release = Invoke-RestMethod -Uri $api -UseBasicParsing;
+        $asset = $release.assets | Where-Object { $_.name -like '*win32_amd64.tar.gz' } | Select-Object -First 1;
+        if ($null -eq $asset) { throw 'Foundry Windows asset not found' };
+        $url = $asset.browser_download_url;
+        $dest = Join-Path $env:TEMP 'foundry.tar.gz';
+        Write-Host 'Downloading Foundry from GitHub...';
+        Invoke-WebRequest -Uri $url -OutFile $dest;
+        $installDir = Join-Path $HOME '.foundry\bin';
+        if (-not (Test-Path $installDir)) { New-Item -ItemType Directory -Path $installDir -Force | Out-Null };
+        Write-Host 'Extracting to .foundry/bin...';
+        tar -xzf $dest -C $installDir;
+        Remove-Item $dest;
+        Write-Host 'Foundry binaries ready.';
+    "#;
+
+    let status = Command::new(shell::which_powershell())
+        .args(["-Command", pwsh_script])
+        .stdin(Stdio::inherit())
+        .stdout(Stdio::inherit())
+        .stderr(Stdio::inherit())
+        .status()
+        .map_err(|e| format!("Failed to run PowerShell: {e}"))?;
+
+    if !status.success() {
+        return Err("Foundry installation via PowerShell failed.".to_string());
+    }
+
+    tracing::info!("Foundry installed successfully!");
+    tracing::info!("Next step: cd into your project folder and run: hara foundry init");
+    Ok(())
+}
+
+fn run_bash() -> Result<(), String> {
+    tracing::info!("Installing Foundry for HARA development (via Bash)...");
 
     let install_cmd = "curl -fsSL https://foundry.paradigm.xyz | bash";
     let shell_bin = shell::which_shell();
@@ -26,7 +72,7 @@ pub fn run() -> Result<(), String> {
             tracing::info!("Proceeding with installation...");
         } else {
             return Err(
-                "Foundry installer failed.\n  Make sure curl and Git Bash are available."
+                "Foundry installer failed.\n  Make sure curl and bash are available."
                     .to_string(),
             );
         }
@@ -47,23 +93,14 @@ pub fn run() -> Result<(), String> {
 
     match status {
         Ok(s) if s.success() => {}
-        Ok(_) => {
-            tracing::info!("foundryup returned non-zero.");
-            tracing::info!("Try restarting your terminal and running: foundryup");
-            return Ok(());
-        }
-        Err(e) => {
-            tracing::info!("Could not run foundryup automatically ({e}).");
+        _ => {
+            tracing::info!("foundryup returned non-zero or failed to run automatically.");
             tracing::info!("Try restarting your terminal and run: foundryup");
             return Ok(());
         }
     }
 
     tracing::info!("Foundry installed successfully!");
-    tracing::info!("Tools installed:");
-    tracing::info!("  forge - smart contract build tool");
-    tracing::info!("  cast  - CLI for EVM interactions");
-    tracing::info!("  anvil - local Ethereum devnet");
-    tracing::info!("Next step: cd into your project folder and run: hara init");
+    tracing::info!("Next step: cd into your project folder and run: hara foundry init");
     Ok(())
 }
